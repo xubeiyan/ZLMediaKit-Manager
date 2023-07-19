@@ -5,6 +5,9 @@ import App from './App.vue'
 import { createPinia } from 'pinia';
 const pinia = createPinia();
 
+// tanstack vue-query
+import { VueQueryPlugin } from "@tanstack/vue-query";
+
 // 路由
 import router from './router/index';
 
@@ -29,4 +32,5 @@ createApp(App)
   .use(vuetify)
   .use(router)
   .use(pinia)
+  .use(VueQueryPlugin)
   .mount('#app')
