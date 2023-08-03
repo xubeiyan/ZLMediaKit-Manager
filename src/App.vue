@@ -20,10 +20,14 @@ const toggleNav = () => {
   <v-layout>
     <AppBar @toggleNav="toggleNav" />
     <Navigation :trail="nav.trail" />
-    <v-main class="" style="min-height: 300px;">
+    <v-main class="main">
       <router-view />
     </v-main>
   </v-layout>
 </template>
 
-<style scoped></style>
+<style scoped>
+.main {
+  min-height: 100vh;
+}
+</style>
