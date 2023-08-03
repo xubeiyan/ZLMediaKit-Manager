@@ -5,6 +5,7 @@ specifiers:
   '@tanstack/vue-query': ^4.29.25
   '@vitejs/plugin-vue': ^4.2.3
   axios: ^1.4.0
+  mpegts.js: ^1.7.3
   pinia: ^2.1.4
   vite: ^4.4.0
   vue: ^3.3.4
@@ -14,6 +15,7 @@ specifiers:
 dependencies:
   '@tanstack/vue-query': 4.29.25_vue@3.3.4
   axios: 1.4.0
+  mpegts.js: 1.7.3
   pinia: 2.1.4_vue@3.3.4
   vue: 3.3.4
   vue-router: 4.2.4_vue@3.3.4
@@ -398,6 +400,10 @@ packages:
     engines: {node: '>=0.4.0'}
     dev: false
 
+  /es6-promise/4.2.8:
+    resolution: {integrity: sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==}
+    dev: false
+
   /esbuild/0.18.12:
     resolution: {integrity: sha512-XuOVLDdtsDslXStStduT41op21Ytmf4/BDS46aa3xPJ7X5h2eMWBF1oAe3QjUH3bDksocNXgzGUZ7XHIBya6Tg==}
     engines: {node: '>=12'}
@@ -474,6 +480,13 @@ packages:
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
+    dev: false
+
+  /mpegts.js/1.7.3:
+    resolution: {integrity: sha512-kqZ1C1IsbAQN72cK8vMrzKeM7hwrwSBbFAwVAc7PPweOeoZxCANrc7fAVDKMfYUzxdNkMTnec9tVmlxmKZB0TQ==}
+    dependencies:
+      es6-promise: 4.2.8
+      webworkify-webpack: 2.1.5
     dev: false
 
   /nanoid/3.3.6:
@@ -636,4 +649,8 @@ packages:
         optional: true
     dependencies:
       vue: 3.3.4
+    dev: false
+
+  /webworkify-webpack/2.1.5:
+    resolution: {integrity: sha512-2akF8FIyUvbiBBdD+RoHpoTbHMQF2HwjcxfDvgztAX5YwbZNyrtfUMgvfgFVsgDhDPVTlkbb5vyasqDHfIDPQw==}
     dev: false

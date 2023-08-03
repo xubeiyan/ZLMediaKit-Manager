@@ -11,12 +11,12 @@ import { storeToRefs } from 'pinia';
 import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
-const { backEndpoint, secret } = storeToRefs(store);
+const { backEndpoint, apiPrefix, secret } = storeToRefs(store);
 
 const { isLoading, data, error } = useQuery({
   queryKey: ['mediaList'],
   queryFn: async () => {
-    let res = await api.get(`${backEndpoint.value}index/api/getMediaList`, {
+    let res = await api.get(`${backEndpoint.value}${apiPrefix.value}/api/getMediaList`, {
       params: {
         secret: secret.value,
       }
@@ -48,9 +48,9 @@ onMounted(() => {
     <v-overlay v-model="isLoading" contained class="align-center justify-center">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </v-overlay>
-    <v-alert v-if="data.length == 0" border="start">当前没有视频流</v-alert>
+    <v-alert v-if="data?.length == 0" border="start" border-color="warning">当前没有视频流</v-alert>
     <template v-for="one, index in data" :key="index">
-      <VideoCard :origin-url="one.originUrl" :schema="one.schema" :name="one.stream" />
+      <VideoCard :origin-url="one.originUrl" :schema="one.schema" :name="one.stream" :app="one.app" />
     </template>
   </v-sheet>
 </template>

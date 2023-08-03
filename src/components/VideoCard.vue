@@ -1,21 +1,23 @@
 <script setup>
-import { ref, onMounted, onUnmounted, reactive } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 import { useMutation } from '@tanstack/vue-query';
 import api from '../utils/api';
+
+import VideoDialog from './VideoDialog.vue';
 
 // 从pinia获取保存的后端地址和密钥
 import { storeToRefs } from 'pinia';
 import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
-const { backEndpoint, secret } = storeToRefs(store);
+const { backEndpoint, apiPrefix, secret } = storeToRefs(store);
 
-const prop = defineProps(['originUrl', 'schema', 'name']);
+const prop = defineProps(['originUrl', 'schema', 'name', 'app']);
 
 const mutation = useMutation({
   mutationFn: async () => {
-    let res = await api.get(`${backEndpoint.value}index/api/getSnap`, {
+    let res = await api.get(`${backEndpoint.value}${apiPrefix.value}/api/getSnap`, {
       params: {
         secret: secret.value,
         url: prop.originUrl,
@@ -38,18 +40,17 @@ const mutation = useMutation({
   }
 })
 
-// 对话框
-const dialog = reactive({
-  open: false,
-})
+// 对话框ref
+const dialogRef = ref(null);
 
 // 打开对话kuang
 const openDialog = () => {
-  dialog.open = true;
+  dialogRef.value.openDialog();
 }
 
 // 略缩图片
 const image = ref();
+
 
 let timer = null;
 
@@ -81,9 +82,7 @@ onUnmounted(() => {
       <v-btn variant="tonal" color="primary" @click="openDialog">详情</v-btn>
     </v-card-actions>
   </v-card>
-  <v-dialog v-model="dialog.open">
-
-  </v-dialog>
+  <VideoDialog ref="dialogRef" :name="prop.name" :schema="prop.schema" :app="prop.app" />
 </template>
 <style scoped>
 .video-card {

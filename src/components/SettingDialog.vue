@@ -20,7 +20,7 @@ import { storeToRefs } from 'pinia';
 import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
-const { backEndpoint, secret } = storeToRefs(store);
+const { backEndpoint, apiPrefix, secret } = storeToRefs(store);
 
 // 测试地址
 import { useMutation } from '@tanstack/vue-query';
@@ -35,7 +35,7 @@ const alert = reactive({
 const { isIdle, isLoading, isError, isSuccess, mutate } = useMutation({
   mutationFn: async () => {
     alert.err = null;
-    let res = await api.get(`${backEndpoint.value}index/api/getApiList`, {
+    let res = await api.get(`${backEndpoint.value}${apiPrefix.value}/api/getApiList`, {
       params: {
         secret: secret.value,
       }
@@ -81,6 +81,7 @@ const buttonColor = computed(() => {
       <v-card-title>设置</v-card-title>
       <v-card-text>
         <v-text-field v-model="backEndpoint" label="后端API地址" density="compact"></v-text-field>
+        <v-text-field v-model="apiPrefix" label="API前缀" density="compact"></v-text-field>
         <v-text-field v-model="secret" label="密钥" density="compact"></v-text-field>
         <v-alert density="compact" v-if="alert.err != null" type="error" :text="alert.err" />
       </v-card-text>
