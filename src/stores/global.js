@@ -1,22 +1,32 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { reactive } from 'vue';
 
 export const useGlobalStore = defineStore('global', () => {
   const initialValue = {
     backEndpoint: 'http://127.0.0.1:9000/',
     apiPrefix: 'index',
+    refreshTime: 10,
     secret: 'abcde',
   }
 
-  const backEndpoint = ref(initialValue.backEndpoint);
-  const apiPrefix = ref(initialValue.apiPrefix);
-  const secret = ref(initialValue.secret);
+  const fromLocalStorage = window.localStorage.getItem('globalSetting');
+  const storageValue = JSON.parse(fromLocalStorage);
+  let storage = null;
 
-  function $reset() {
-    backEndpoint.value = initialValue.backEndpoint;
-    apiPrefix.value = initialValue.apiPrefix;
-    secret.value = initialValue.secret;
+  if (fromLocalStorage == undefined) {
+    storage = reactive(initialValue);
+  } else {
+    // Object.assign(target, source) 指的是target目标中的相同键值的被source覆盖
+    storage = reactive(Object.assign(initialValue, storageValue));
   }
 
-  return { backEndpoint, apiPrefix, secret, $reset };
+  function $reset() {
+    storage = reactive(initialValue);
+  }
+
+  function $saveToLocalStorage() {
+    window.localStorage.setItem('globalSetting', JSON.stringify(storage));
+  }
+
+  return { storage, $saveToLocalStorage, $reset };
 })

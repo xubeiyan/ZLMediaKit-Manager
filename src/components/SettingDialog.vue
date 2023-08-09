@@ -16,11 +16,17 @@ defineExpose({
 });
 
 // 从pinia获取保存的后端地址和密钥
-import { storeToRefs } from 'pinia';
 import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
-const { backEndpoint, apiPrefix, secret } = storeToRefs(store);
+
+const storage = reactive(store.storage);
+
+// 保存当前配置到localStorage
+const closeDialog = () => {
+  dialog.open = false
+  store.$saveToLocalStorage(storage);
+}
 
 // 测试地址
 import { useMutation } from '@tanstack/vue-query';
@@ -35,9 +41,9 @@ const alert = reactive({
 const { isIdle, isLoading, isError, isSuccess, mutate } = useMutation({
   mutationFn: async () => {
     alert.err = null;
-    let res = await api.get(`${backEndpoint.value}${apiPrefix.value}/api/getApiList`, {
+    let res = await api.get(`${storage.backEndpoint}${storage.apiPrefix}/api/getApiList`, {
       params: {
-        secret: secret.value,
+        secret: storage.secret,
       }
     });
 
@@ -80,9 +86,9 @@ const buttonColor = computed(() => {
     <v-card>
       <v-card-title>设置</v-card-title>
       <v-card-text>
-        <v-text-field v-model="backEndpoint" label="后端API地址" density="compact"></v-text-field>
-        <v-text-field v-model="apiPrefix" label="API前缀" density="compact"></v-text-field>
-        <v-text-field v-model="secret" label="密钥" density="compact"></v-text-field>
+        <v-text-field v-model="storage.backEndpoint" label="后端API地址" density="compact"></v-text-field>
+        <v-text-field v-model="storage.apiPrefix" label="API前缀" density="compact"></v-text-field>
+        <v-text-field v-model="storage.secret" label="密钥" density="compact"></v-text-field>
         <v-alert density="compact" v-if="alert.err != null" type="error" :text="alert.err" />
       </v-card-text>
       <v-card-actions class="justify-center">
@@ -93,7 +99,7 @@ const buttonColor = computed(() => {
           <span v-else>测试</span>
         </v-btn>
         <v-btn variant="tonal" color="warning" @click="store.$reset">重置</v-btn>
-        <v-btn variant="tonal" @click="dialog.open = false">关闭</v-btn>
+        <v-btn variant="tonal" @click="closeDialog">关闭</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
