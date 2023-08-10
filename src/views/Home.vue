@@ -14,7 +14,7 @@ const store = useGlobalStore();
 // 媒体列表
 const mediaList = ref(null);
 
-const { isLoading, error, mutate } = useMutation({
+const { error, mutate } = useMutation({
   mutationFn: async () => {
     const backEndpoint = computed(() => store.storage.backEndpoint).value;
     const apiPrefix = computed(() => store.storage.apiPrefix).value;

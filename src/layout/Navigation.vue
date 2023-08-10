@@ -10,7 +10,8 @@ const toLink = (path) => {
 
 const items = [
   { text: '主页', icon: 'mdi-home', link: '/' },
-  { text: '关于', icon: 'mdi-account-multiple', link: '/about' },
+  { text: '服务器状态', icon: 'mdi-poll', link: '/serverconfig' },
+  { text: '关于', icon: 'mdi-information-box-outline', link: '/about' },
 ];
 
 </script>
