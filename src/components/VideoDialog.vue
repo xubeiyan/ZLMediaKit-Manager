@@ -1,14 +1,12 @@
 <script setup>
-import { nextTick, reactive, ref } from 'vue';
+import { computed, nextTick, reactive, ref } from 'vue';
 
 import Mpegts from 'mpegts.js';
 
 // 从pinia获取保存的后端地址和密钥
-import { storeToRefs } from 'pinia';
 import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
-const { backEndpoint } = storeToRefs(store);
 
 const dialog = reactive({
   open: false,
@@ -67,14 +65,13 @@ defineExpose({
 
 // 获取视频播放地址
 const getVideoUrl = ({ type }) => {
+  const backEndpoint = computed(() => store.storage.backEndpoint).value;
   if (type == 'flv') {
-    return `${backEndpoint.value}${prop.app}/${prop.name}.live.flv`;
+    return `${backEndpoint}${prop.app}/${prop.name}.live.flv`;
   } else if (type == 'mp4') {
-    return `${backEndpoint.value}${prop.app}/${prop.name}.live.mp4`;
+    return `${backEndpoint}${prop.app}/${prop.name}.live.mp4`;
   }
-
 }
-
 </script>
 
 <template>
@@ -87,8 +84,10 @@ const getVideoUrl = ({ type }) => {
       <v-card-text>
         <video id="video" ref="videoEleRef" class="video" v-if="prop.schema == 'fmp4'"></video>
         <template v-if="prop.schema == 'fmp4'">
-          <v-text-field label="http/flv 地址" hide-details="auto" :model-value="getVideoUrl({ type: 'flv' })"></v-text-field>
-          <v-text-field label="http/mp4 地址" hide-details="auto" :model-value="getVideoUrl({ type: 'mp4' })"></v-text-field>
+          <v-text-field label="http/flv 地址" hide-details="auto"
+            :model-value="getVideoUrl({ type: 'flv' })"></v-text-field>
+          <v-text-field label="http/mp4 地址" hide-details="auto"
+            :model-value="getVideoUrl({ type: 'mp4' })"></v-text-field>
         </template>
       </v-card-text>
     </v-card>

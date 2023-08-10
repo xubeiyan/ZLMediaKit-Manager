@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 import { useMutation } from '@tanstack/vue-query';
 import api from '../utils/api';
@@ -7,19 +7,21 @@ import api from '../utils/api';
 import VideoDialog from './VideoDialog.vue';
 
 // 从pinia获取保存的后端地址和密钥
-import { storeToRefs } from 'pinia';
 import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
-const { backEndpoint, apiPrefix, secret } = storeToRefs(store);
 
 const prop = defineProps(['originUrl', 'schema', 'name', 'app']);
 
 const mutation = useMutation({
   mutationFn: async () => {
-    let res = await api.get(`${backEndpoint.value}${apiPrefix.value}/api/getSnap`, {
+    const backEndpoint = computed(() => store.storage.backEndpoint).value;
+    const apiPrefix = computed(() => store.storage.apiPrefix).value;
+    const secret = computed(() => store.storage.secret).value;
+
+    let res = await api.get(`${backEndpoint}${apiPrefix}/api/getSnap`, {
       params: {
-        secret: secret.value,
+        secret,
         url: prop.originUrl,
         timeout_sec: 10,
         expire_sec: 10,
@@ -56,9 +58,12 @@ let timer = null;
 
 onMounted(() => {
   mutation.mutate();
+
+  const refreshTime = parseInt(computed(() => store.storage.refreshTime).value);
+  const refreshInterval = Number.isFinite(refreshTime) ? refreshTime : 10;
   timer = setInterval(() => {
     mutation.mutate();
-  }, 10 * 1000);
+  }, refreshInterval * 1000);
 });
 
 onUnmounted(() => {

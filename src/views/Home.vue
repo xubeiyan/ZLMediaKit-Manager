@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onMounted } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useMutation } from '@tanstack/vue-query';
 
 import api from '../utils/api';
 
@@ -11,14 +11,15 @@ import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
 
-const backEndpoint = computed(() => store.storage.backEndpoint).value;
-const apiPrefix = computed(() => store.storage.apiPrefix).value;
-const secret = computed(() => store.storage.secret).value;
+// 媒体列表
+const mediaList = ref(null);
 
+const { isLoading, error, mutate } = useMutation({
+  mutationFn: async () => {
+    const backEndpoint = computed(() => store.storage.backEndpoint).value;
+    const apiPrefix = computed(() => store.storage.apiPrefix).value;
+    const secret = computed(() => store.storage.secret).value;
 
-const { isLoading, data, error } = useQuery({
-  queryKey: ['mediaList'],
-  queryFn: async () => {
     let res = await api.get(`${backEndpoint}${apiPrefix}/api/getMediaList`, {
       params: {
         secret,
@@ -37,23 +38,46 @@ const { isLoading, data, error } = useQuery({
     }
 
     return res.data;
-  }
+  },
+  onSuccess: (data) => {
+    mediaList.value = data;
+  },
 });
+
+let timer = null;
 
 // get 
-
 onMounted(() => {
+  mutate();
 
+  const refreshTime = parseInt(computed(() => store.storage.refreshTime).value);
+  const refreshInterval = Number.isFinite() ? refreshTime : 10;
+
+  timer = setInterval(() => {
+    mutate();
+  }, 1000 * refreshInterval);
 });
+
+onUnmounted(() => {
+  if (timer == null) {
+    return;
+  }
+  clearInterval(timer);
+})
 </script>
 <template>
   <v-sheet class="wrapper">
-    <v-overlay v-model="isLoading" contained class="align-center justify-center">
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-    </v-overlay>
-    <v-alert v-if="error" border="start" border-color="error">错误：{{ error }}</v-alert>
-    <v-alert v-if="data?.length == 0" border="start" border-color="warning">当前没有视频流</v-alert>
-    <template v-for="one, index in data" :key="index">
+    <v-card v-if="error">
+      <v-card-title>未能连接</v-card-title>
+      <v-card-text>
+        <v-alert border="start" type="error" border-color="error">{{ error }}</v-alert>
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn variant="tonal" @click="mutate">重试</v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-alert v-if="mediaList?.length == 0" border="start" border-color="warning">当前没有视频流</v-alert>
+    <template v-for="one in mediaList">
       <VideoCard :origin-url="one.originUrl" :schema="one.schema" :name="one.stream" :app="one.app" />
     </template>
   </v-sheet>

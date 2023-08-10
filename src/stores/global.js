@@ -5,7 +5,7 @@ export const useGlobalStore = defineStore('global', () => {
   const initialValue = {
     backEndpoint: 'http://127.0.0.1:9000/',
     apiPrefix: 'index',
-    refreshTime: 10,
+    refreshTime: '10',
     secret: 'abcde',
   }
 
@@ -20,13 +20,9 @@ export const useGlobalStore = defineStore('global', () => {
     storage = reactive(Object.assign(initialValue, storageValue));
   }
 
-  function $reset() {
-    storage = reactive(initialValue);
+  function $saveToLocalStorage(toSave) {
+    window.localStorage.setItem('globalSetting', JSON.stringify(toSave));
   }
 
-  function $saveToLocalStorage() {
-    window.localStorage.setItem('globalSetting', JSON.stringify(storage));
-  }
-
-  return { storage, $saveToLocalStorage, $reset };
+  return { storage, $saveToLocalStorage };
 })

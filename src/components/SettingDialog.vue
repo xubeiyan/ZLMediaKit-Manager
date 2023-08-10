@@ -89,6 +89,7 @@ const buttonColor = computed(() => {
         <v-text-field v-model="storage.backEndpoint" label="后端API地址" density="compact"></v-text-field>
         <v-text-field v-model="storage.apiPrefix" label="API前缀" density="compact"></v-text-field>
         <v-text-field v-model="storage.secret" label="密钥" density="compact"></v-text-field>
+        <v-text-field v-model="storage.refreshTime" label="刷新时间" density="compact"></v-text-field>
         <v-alert density="compact" v-if="alert.err != null" type="error" :text="alert.err" />
       </v-card-text>
       <v-card-actions class="justify-center">
@@ -98,8 +99,7 @@ const buttonColor = computed(() => {
           <v-icon v-else-if="testStatus == 'loading'" icon="mdi-loading" />
           <span v-else>测试</span>
         </v-btn>
-        <v-btn variant="tonal" color="warning" @click="store.$reset">重置</v-btn>
-        <v-btn variant="tonal" @click="closeDialog">关闭</v-btn>
+        <v-btn variant="tonal" @click="closeDialog">保存并关闭</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
