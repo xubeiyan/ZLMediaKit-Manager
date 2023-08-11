@@ -1,7 +1,37 @@
-# Vue 3 + Vite
+# ZLMediaKit Media Server Web Manager
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 简介
 
-## Recommended IDE Setup
+针对 `ZLMediaKit` 开发的 Web 前端框架，减少调试的困难
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## 使用技术
+
+使用了 `Vue3` 框架和 `Vuetify3` UI 框架
+
+使用搭配 `rollup` 的 `Vite` 构建
+
+## 安装方法
+
+1. `clone`本仓库，切换目录至当前仓库
+
+```bash
+$ git clone https://github.com/xubeiyan/ZLMediaKit-Manager --depth=1  
+
+$ cd ZLMediaKitFrontend
+```
+
+2. 安装所需依赖（这里使用的是`pnpm`，其他类似）
+
+```bash
+pnpm i
+```
+
+3. 进行打包，生成的`target`文件夹，复制到合适位置即可使用
+
+```bash
+# 生成生产环境的包
+$ pnpm run build
+
+# 生成预览
+$ pnpm run preview
+```
