@@ -14,6 +14,7 @@ const store = useGlobalStore();
 // 媒体列表
 const mediaList = ref(null);
 
+// 获取媒体列表
 const { error, mutate } = useMutation({
   mutationFn: async () => {
     const backEndpoint = computed(() => store.storage.backEndpoint).value;
