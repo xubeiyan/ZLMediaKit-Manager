@@ -11,7 +11,7 @@ import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
 
-const prop = defineProps(['originUrl', 'schema', 'name', 'app']);
+const prop = defineProps(['originUrl', 'schemaArr', 'name', 'app']);
 
 const mutation = useMutation({
   mutationFn: async () => {
@@ -79,7 +79,7 @@ onUnmounted(() => {
 <template>
   <v-card class="video-card" elevation="5">
     <v-card-title>{{ prop.name }}</v-card-title>
-    <v-card-subtitle>{{ prop.schema }}</v-card-subtitle>
+    <v-card-subtitle>{{ prop.schemaArr.join(' / ') }}</v-card-subtitle>
     <v-card-text>
       <img ref="image" class="snap-image" />
     </v-card-text>
@@ -87,7 +87,7 @@ onUnmounted(() => {
       <v-btn variant="tonal" color="primary" @click="openDialog">详情</v-btn>
     </v-card-actions>
   </v-card>
-  <VideoDialog ref="dialogRef" :name="prop.name" :schema="prop.schema" :app="prop.app" />
+  <VideoDialog ref="dialogRef" :name="prop.name" :schemaArr="prop.schemaArr" :app="prop.app" />
 </template>
 <style scoped>
 .video-card {
