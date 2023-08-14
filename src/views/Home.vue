@@ -14,6 +14,7 @@ const store = useGlobalStore();
 // 媒体列表
 const mediaList = ref(null);
 
+// 获取媒体列表
 const { error, mutate } = useMutation({
   mutationFn: async () => {
     const backEndpoint = computed(() => store.storage.backEndpoint).value;
@@ -40,7 +41,28 @@ const { error, mutate } = useMutation({
     return res.data;
   },
   onSuccess: (data) => {
-    mediaList.value = data;
+    // 处理app和stream相同的流
+    const mediaArr = [];
+    data.forEach(one => {
+      const streamId = `${one.app} - ${one.stream}`;
+      const filtered = mediaArr.filter(one => one.streamId == streamId);
+      // 如果没有这个streamId对应的key
+      if (filtered.length == 0) {
+        mediaArr.push({
+          streamId,
+          app: one.app,
+          stream: one.stream,
+          schemaArr: [one.schema],
+          aliveSecond: one.aliveSecond,
+          originUrl: one.originUrl,
+        })
+      } else {
+        let certainMedia = filtered[0];
+        certainMedia.schemaArr.push(one.schema);
+      }
+    });
+
+    mediaList.value = mediaArr;
   },
 });
 
@@ -78,7 +100,7 @@ onUnmounted(() => {
     </v-card>
     <v-alert v-if="mediaList?.length == 0" border="start" border-color="warning">当前没有视频流</v-alert>
     <template v-for="one in mediaList">
-      <VideoCard :origin-url="one.originUrl" :schema="one.schema" :name="one.stream" :app="one.app" />
+      <VideoCard :origin-url="one.originUrl" :schemaArr="one.schemaArr" :name="one.stream" :app="one.app" />
     </template>
   </v-sheet>
 </template>

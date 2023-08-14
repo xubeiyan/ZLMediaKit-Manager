@@ -1,62 +1,68 @@
 <script setup>
-import { computed, nextTick, reactive, ref } from 'vue';
-
-import Mpegts from 'mpegts.js';
+import { computed, reactive, ref } from 'vue';
 
 // 从pinia获取保存的后端地址和密钥
-import { useGlobalStore } from '../stores/global.js';
-
+import { useGlobalStore } from '@/stores/global.js';
 const store = useGlobalStore();
+
+import Video from '../components/VideoDialog/Video.vue';
+import VideoUrl from './VideoDialog/VideoUrl.vue';
+import { useQuery } from '@tanstack/vue-query';
+import api from '../utils/api';
 
 const dialog = reactive({
   open: false,
+});
+
+const videoEleRef = ref(null);
+
+const prop = defineProps(['name', 'schemaArr', 'app']);
+
+const ports = reactive({
+  rtsp: null,
+  rtmp: null,
+  http: null,
+});
+
+useQuery({
+  queryKey: ['videoSourceType'],
+  queryFn: async () => {
+    const backEndpoint = computed(() => store.storage.backEndpoint).value;
+    const apiPrefix = computed(() => store.storage.apiPrefix).value;
+    const secret = computed(() => store.storage.secret).value;
+
+    let res = await api.get(`${backEndpoint}${apiPrefix}/api/getServerConfig`, {
+      params: {
+        secret,
+      }
+    });
+
+    const data = res.data[0];
+
+    if (data['rtsp.port']) {
+      ports.rtsp = data['rtsp.port'];
+
+    }
+
+    if (data['rtmp.port']) {
+      ports.rtmp = data['rtmp.port'];
+    }
+
+    return '';
+  }
 })
-
-const videoEleRef = ref();
-
-const prop = defineProps(['name', 'schema', 'app']);
-// 播放器
-let player = null;
 
 // 对话框状态
 const openDialog = async () => {
   dialog.open = true;
-
-  // 等待下一次渲染
-  await nextTick();
-
-  if (prop.schema !== 'fmp4') return;
-
-  if (!Mpegts.getFeatureList().mseLivePlayback) {
-    return
-  }
-
-  Mpegts.LoggingControl.enableAll = false;
-
-  const url = getVideoUrl({ type: 'flv' });
-
-  player = Mpegts.createPlayer({
-    type: 'flv',
-    isLive: true,
-    url,
-  });
-
-  const video = document.querySelector('#video');
-
-  player.attachMediaElement(video);
-  player.load();
-  player.play();
 }
 
 // 关闭对话框
 const closeDialog = () => {
   dialog.open = false;
 
-  if (player == null) return;
-
-  player.unload();
-  player.destroy();
-
+  if (videoEleRef.value == null) return;
+  videoEleRef.value.destroyVideo();
 }
 
 defineExpose({
@@ -70,8 +76,38 @@ const getVideoUrl = ({ type }) => {
     return `${backEndpoint}${prop.app}/${prop.name}.live.flv`;
   } else if (type == 'mp4') {
     return `${backEndpoint}${prop.app}/${prop.name}.live.mp4`;
+  } else if (type == 'ts') {
+    return `${backEndpoint}${prop.app}/${prop.name}.live.ts`;
+  } else if (type == 'rtsp') {
+    const url = new URL(`${backEndpoint}`);
+    return `rtsp://${url.hostname}:${ports.rtsp}/${prop.app}/${prop.name}`
+  } else if (type == 'rtmp') {
+    const url = new URL(`${backEndpoint}`);
+    return `rtmp://${url.hostname}:${ports.rtmp}/${prop.app}/${prop.name}`
   }
 }
+
+// 各种视频流的地址
+const urls = computed(() => {
+  const urlObj = {};
+  if (prop.schemaArr.includes('fmp4')) {
+    urlObj.mp4 = getVideoUrl({ type: 'mp4' });
+    urlObj.flv = getVideoUrl({ type: 'flv' });
+    urlObj.ts = getVideoUrl({ type: 'ts' });
+  }
+
+  if (prop.schemaArr.includes('rtsp')) {
+    urlObj.rtsp = getVideoUrl({ type: 'rtsp' });
+  }
+
+  if (prop.schemaArr.includes('rtmp')) {
+    urlObj.rtmp = getVideoUrl({ type: 'rtmp' });
+  }
+
+
+  return urlObj;
+});
+
 </script>
 
 <template>
@@ -80,15 +116,10 @@ const getVideoUrl = ({ type }) => {
       <v-icon>mdi-close</v-icon>
     </v-btn>
     <v-card>
-      <v-card-title>详细视频 - {{ prop.name }} - {{ prop.schema }}</v-card-title>
+      <v-card-title>详细视频 - {{ prop.name }} </v-card-title>
       <v-card-text>
-        <video id="video" ref="videoEleRef" class="video" v-if="prop.schema == 'fmp4'"></video>
-        <template v-if="prop.schema == 'fmp4'">
-          <v-text-field label="http/flv 地址" hide-details="auto"
-            :model-value="getVideoUrl({ type: 'flv' })"></v-text-field>
-          <v-text-field label="http/mp4 地址" hide-details="auto"
-            :model-value="getVideoUrl({ type: 'mp4' })"></v-text-field>
-        </template>
+        <Video ref="videoEleRef" v-if="prop.schemaArr.includes('fmp4')" :url="getVideoUrl({ type: 'flv' })" />
+        <VideoUrl :urls="urls" />
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -101,9 +132,5 @@ const getVideoUrl = ({ type }) => {
   top: 0;
   z-index: 10;
   translate: 50% -50%;
-}
-
-.video {
-  width: 100%;
 }
 </style>
