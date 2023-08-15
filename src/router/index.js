@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from '../views/Home.vue';
-import ServerConfig from '../views/ServerConfig.vue';
+import ServerStatus from '../views/ServerStatus.vue';
 import About from '../views/About.vue';
 
 const routes = [
@@ -11,9 +11,9 @@ const routes = [
     component: Home,
   },
   {
-    path: '/serverconfig',
-    name: 'ServerConfig',
-    component: ServerConfig,
+    path: '/serverstatus',
+    name: 'ServerStatus',
+    component: ServerStatus,
   },
   {
     path: '/about',

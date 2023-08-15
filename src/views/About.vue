@@ -12,6 +12,7 @@
       <v-card-actions>
         <a href="https://github.com/xubeiyan/ZLMediaKit-Manager" target="_blank">
           <v-btn icon="mdi-github" class="text-black"></v-btn>
+          <v-tooltip activator="parent" location="bottom">GitHub</v-tooltip>
         </a>
       </v-card-actions>
     </v-card>

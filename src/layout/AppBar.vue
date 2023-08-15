@@ -19,6 +19,9 @@ const openDialog = () => {
     <v-app-bar-title>ZLMediaKit 媒体服务器 管理工具</v-app-bar-title>
     <v-btn icon @click="openDialog">
       <v-icon>mdi-cog</v-icon>
+      <v-tooltip activator="parent" location="bottom end" origin="auto">
+        设置
+      </v-tooltip>
     </v-btn>
     <SettingDialog ref="settingDialog" />
   </v-app-bar>

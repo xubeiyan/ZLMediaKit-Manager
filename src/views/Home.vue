@@ -89,15 +89,7 @@ onUnmounted(() => {
 </script>
 <template>
   <v-sheet class="wrapper">
-    <v-card v-if="error">
-      <v-card-title>未能连接</v-card-title>
-      <v-card-text>
-        <v-alert border="start" type="error" border-color="error">{{ error }}</v-alert>
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn variant="tonal" @click="mutate">重试</v-btn>
-      </v-card-actions>
-    </v-card>
+    <v-alert v-if="error" type="error">{{ error }}</v-alert>
     <v-alert v-if="mediaList?.length == 0" border="start" border-color="warning">当前没有视频流</v-alert>
     <template v-for="one in mediaList">
       <VideoCard :origin-url="one.originUrl" :schemaArr="one.schemaArr" :name="one.stream" :app="one.app" />
