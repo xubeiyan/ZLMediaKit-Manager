@@ -18,7 +18,8 @@ const dialog = reactive({
   vhost: '__defaultVhost__',
   app: '',
   stream: '',
-  error: null
+  error: null,
+  submitLoading: false,
 });
 
 // 打开添加视频流对话框
@@ -46,9 +47,15 @@ const mutation = useMutation({
       throw new Error(res.msg);
     } else if (res.code == -100) {
       throw new Error('密钥错误');
+    } else if (res.code == -1) {
+      throw new Error(res.msg);
     }
 
     return res;
+  },
+  // 开始请求
+  onMutate: () => {
+    dialog.submitLoading = true;
   },
   onError: (err) => {
     dialog.error = err.message;
@@ -58,6 +65,9 @@ const mutation = useMutation({
       dialog.open = false;
     }
 
+  },
+  onSettled: () => {
+    dialog.submitLoading = false;
   }
 })
 
@@ -82,11 +92,11 @@ const addStreamProxy = () => {
           <v-text-field v-model="dialog.app" density="compact" label="应用名" hint="rtmp://127.0.0.1/live/stream中的live即为应用名" />
           <v-text-field v-model="dialog.stream" density="compact" label="推流码" hint="rtmp://127.0.0.1/live/stream中的stream即为推流码" />
 
-          <v-alert v-if="dialog.error != null" type="error" density="compact">{{ dialog.error }}</v-alert>
+          <v-alert v-if="dialog.error != null" type="error" density="compact" closable>{{ dialog.error }}</v-alert>
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn variant="tonal" @click="dialog.open = false">取消</v-btn>
-          <v-btn variant="tonal" color="primary" @click="addStreamProxy">添加</v-btn>
+          <v-btn variant="tonal" @click="dialog.open = false" >取消</v-btn>
+          <v-btn variant="tonal" color="primary" :loading="dialog.submitLoading" @click="addStreamProxy">添加</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
