@@ -3,6 +3,7 @@ import { ref } from 'vue';
 
 import StreamOnServer from '../components/StreamOnServer.vue';
 import AddStreamProxy from '../components/AddStreamProxy.vue';
+import CloseStreamProxy from '../components/CloseStreamProxy.vue';
 
 const tab = ref(null);
 </script>
@@ -12,7 +13,10 @@ const tab = ref(null);
       <v-tab value="stream_on_server">视频流</v-tab>
     </v-tabs>
     <v-window class="pa-4" v-model="tab">
-      <AddStreamProxy />
+      <v-sheet>
+        <AddStreamProxy />
+        <CloseStreamProxy />
+      </v-sheet>
       <v-divider class="my-2" />
       <v-window-item value="stream_on_server">
         <StreamOnServer />

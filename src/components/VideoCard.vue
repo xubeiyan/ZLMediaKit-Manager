@@ -98,7 +98,7 @@ onUnmounted(() => {
 
 <template>
   <v-card class="video-card" elevation="5">
-    <v-card-title>{{ prop.name }}</v-card-title>
+    <v-card-title>{{ prop.app }} - {{ prop.name }}</v-card-title>
     <v-card-subtitle>{{ prop.schemaArr.join(' / ') }}</v-card-subtitle>
     <v-card-text>
       <img ref="image" class="snap-image" />
