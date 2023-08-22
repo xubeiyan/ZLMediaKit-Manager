@@ -11,7 +11,7 @@ import { useGlobalStore } from '../stores/global.js';
 
 const store = useGlobalStore();
 
-const prop = defineProps(['originUrl', 'schemaArr', 'name', 'app']);
+const prop = defineProps(['originUrl', 'originType', 'schemaArr', 'name', 'app']);
 
 const mutation = useMutation({
   mutationFn: async () => {
@@ -38,6 +38,7 @@ const mutation = useMutation({
     return res;
   },
   onSuccess: (data) => {
+    if (image.value == undefined) return;
     image.value.src = window.URL.createObjectURL(data);
   }
 })
@@ -53,6 +54,25 @@ const openDialog = () => {
 // 略缩图片
 const image = ref();
 
+// 流来源
+const originType = computed(() => {
+  if (prop.originType == 1 || prop.originType == 2 || prop.originType == 3) {
+    return {
+      color: 'cyan-darken-4',
+      text: '推流',
+    };
+  } else if (prop.originType == 4 || prop.originType == 5) {
+    return {
+      color: 'orange-darken-4',
+      text: '拉流'
+    }
+  } else {
+    return {
+      color: 'grey-darken-4',
+      text: '未知'
+    };
+  }
+});
 
 let timer = null;
 
@@ -78,12 +98,13 @@ onUnmounted(() => {
 
 <template>
   <v-card class="video-card" elevation="5">
-    <v-card-title>{{ prop.name }}</v-card-title>
+    <v-card-title>{{ prop.app }} - {{ prop.name }}</v-card-title>
     <v-card-subtitle>{{ prop.schemaArr.join(' / ') }}</v-card-subtitle>
     <v-card-text>
       <img ref="image" class="snap-image" />
     </v-card-text>
-    <v-card-actions class="justify-end">
+    <v-card-actions class="justify-space-between">
+      <v-chip :color="originType.color">{{ originType.text }}</v-chip>
       <v-btn variant="tonal" color="primary" @click="openDialog">详情</v-btn>
     </v-card-actions>
   </v-card>
