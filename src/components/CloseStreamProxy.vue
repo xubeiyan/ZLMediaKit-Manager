@@ -102,6 +102,12 @@ const closeMutation = useMutation({
     snackbar.open = true;
   }
 });
+
+// 已选择视频数
+const selecedVideoLength = computed(() => {
+  const filtered = dialog.streamList.filter(one => one.selected);
+  return filtered.length;
+})
 </script>
 
 <template>
@@ -123,7 +129,7 @@ const closeMutation = useMutation({
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn variant="tonal" @click="dialog.open = false">取消</v-btn>
-        <v-btn variant="tonal" color="primary" @click="closeMutation.mutate()">确认</v-btn>
+        <v-btn variant="tonal" color="primary" :disabled="selecedVideoLength == 0" @click="closeMutation.mutate()">确认</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

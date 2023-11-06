@@ -16,7 +16,7 @@ const store = useGlobalStore();
 const mediaList = ref(null);
 
 // 获取媒体列表
-const { error, mutate } = useMutation({
+const { isError, error, mutate } = useMutation({
   mutationFn: async () => {
     const backEndpoint = computed(() => store.storage.backEndpoint).value;
     const apiPrefix = computed(() => store.storage.apiPrefix).value;
@@ -92,7 +92,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <v-alert v-if="error" type="error">{{ error }}</v-alert>
+  <v-alert v-if="isError" type="error">{{ error.message }}：请检查右上角配置填写是否正确</v-alert>
   <v-alert v-if="mediaList?.length == 0" border="start" border-color="warning">当前没有视频流</v-alert>
   <div class="video-container">
     <VideoCard v-for="one in mediaList" :origin-url="one.originUrl" :origin-type="one.originType"

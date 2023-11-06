@@ -1,8 +1,9 @@
 {
   "name": "zlmediakit-frontend",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
+  "homepage": "https://github.com/xubeiyan/ZLMediaKit-Manager",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
